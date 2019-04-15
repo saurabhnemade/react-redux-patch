@@ -1,4 +1,5 @@
-import { get, set } from 'lodash';
+import get from 'lodash/get';
+import set from 'lodash/set';
 
 /**
  * To create dynamic action creator
@@ -47,8 +48,10 @@ const pathMapReducer = (key, reducer) => (state, action) => {
     }
 
     /**
-     * Be careful!! Do not mutate here.
+     * Be careful about mutation!!!
      */
+
+    Object.assign({}, state);
     let initialState = Object.assign({}, state);
     initialState = set(initialState, key, newSubState);
     return initialState;
@@ -62,13 +65,13 @@ const composeReducers = (...reducers) => (state, action) => {
     let nextState = Object.assign({}, state);
     reducers.forEach((reducer) => {
         if (typeof reducer === 'function') {
-        nextState = reducer(nextState, action);
-    } else {
-        reducer.forEach((pathMapReducer) => {
-            nextState = pathMapReducer(nextState, action);
+          nextState = reducer(nextState, action);
+        } else {
+            reducer.forEach((pathMapReducer) => {
+                nextState = pathMapReducer(nextState, action);
+        });
+        }
     });
-    }
-});
     return nextState;
 };
 /* eslint-disable no-param-reassign, new-cap, no-shadow */

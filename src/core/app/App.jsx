@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Reducer from './app-reducer';
 import Actions from './app-actions';
-import StatefulComponent from '../redux/StatefulComponent.jsx';
+import StatefulComponent from '../redux/StatefulComponent.js';
 
 @StatefulComponent(Actions, Reducer, 'application')
 export default class App extends Component {
@@ -14,19 +14,7 @@ export default class App extends Component {
 
         /** App Actions */
         appInitialized: PropTypes.func.isRequired,
-    }
-
-    static childContextTypes = {
-        routes: PropTypes.object,
-        history: PropTypes.object,
-    }
-
-    getChildContext() {
-        return {
-            history: this.props.history,
-            routes: this.props.routes,
-        };
-    }
+    };
 
     componentDidMount() {
         this.props.appInitialized();
@@ -35,10 +23,11 @@ export default class App extends Component {
     render() {
         const HeaderComponent = this.props.headerComponent;
         return (
-            <div style={{ height: '100%' }}>
-                <HeaderComponent {...this.props} />
-                {this.props.children}
-            </div>
+              <div style={{ height: '100%' }}>
+                {this.props.name}
+                  <HeaderComponent {...this.props} />
+                  {this.props.children}
+              </div>
         );
     }
 }

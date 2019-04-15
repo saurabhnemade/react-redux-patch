@@ -1,5 +1,5 @@
 import React from 'react';
 
-const RouteContext = React.createContext('');
+const StoreContext = React.createContext('');
 
-export default RouteContext;
+export default StoreContext;

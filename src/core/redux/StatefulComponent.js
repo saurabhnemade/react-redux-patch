@@ -1,9 +1,18 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
 import { bindActionCreators, combineReducers } from 'redux';
 import { connect } from 'react-redux';
-import { get, assign, unset, keys, forEach, memoize, pick /* , filter, cloneDeep*/ } from 'lodash';
+import memoize from 'lodash/memoize';
+import get from 'lodash/get';
+import assign from 'lodash/assign';
+import unset from 'lodash/unset';
+import keys from 'lodash/keys';
+import omit from 'lodash/omit';
+import forEach from 'lodash/forEach';
 import { pathMapReducer, composeReducers } from './ReducerUtils';
+import StoreContext from "../Context/StoreContext";
+import withAllContext from "../Context/withAllContext";
+import RouteContext from "../Context/RouteContext";
+import ParentStateSelectorContext from "../Context/ParentStateSelectorContext";
 
 const INIT_STATEFUL_COMPONENT = '@@INIT_STATEFUL_COMPONENT';
 const INIT_STATEFUL_COMPONENT_STATE_FROM_PROPS = '@@INIT_STATEFUL_COMPONENT_STATE_FROM_PROPS';
@@ -72,37 +81,17 @@ const StatefulComponentDecorator = (BaseComponent,
                                     Reducer,
                                     stateSelector,
                                     inheritStateSelector) => {
+    @withAllContext
     class StatefulComponent extends PureComponent {
-        static contextTypes = {
-            store: PropTypes.object,
-            parentStateSelector: PropTypes.string,
-            history: PropTypes.object,
-        }
-
-        static childContextTypes = {
-            parentStateSelector: PropTypes.string,
-            history: PropTypes.object,
-        };
-
-
         static getBasePropTypes() {
             return BaseComponent.propTypes || {};
         }
 
 
-        constructor(props, context) {
-            super(props, context);
+        constructor(props) {
+            super(props);
             this.connectRedux();
         }
-
-
-        getChildContext() {
-            return {
-                parentStateSelector: this.getStateSelector(),
-                history: this.context.history,
-            };
-        }
-
 
         componentWillUnmount() {
             // this.disconnectRedux();
@@ -114,12 +103,12 @@ const StatefulComponentDecorator = (BaseComponent,
                 if (!inheritStateSelector) {
                     return BaseComponent.name;
                 }
-                return `${this.context.parentStateSelector}.${BaseComponent.name}`;
+                return `${this.props.parentStateSelector}.${BaseComponent.name}`;
             }
             if (!inheritStateSelector) {
                 return stateSelector;
             }
-            return `${this.context.parentStateSelector}.${stateSelector}`;
+            return `${this.props.parentStateSelector}.${stateSelector}`;
         }
 
         getConnectedProps() {
@@ -150,25 +139,32 @@ const StatefulComponentDecorator = (BaseComponent,
 
         getComposedReducers() {
             const t = [];
-            keys(this.context.store.asyncReducers).forEach((key) => {
-                t.push(pathMapReducer(key, this.context.store.asyncReducers[key]));
+
+            keys(this.props.store.initialReducers).forEach((key) => {
+              t.push(pathMapReducer(key, this.props.store.initialReducers[key]));
             });
 
-            t.unshift(combineReducers(this.context.store.initialReducers));
+            keys(this.props.store.asyncReducers).forEach((key) => {
+                t.push(pathMapReducer(key, this.props.store.asyncReducers[key]));
+            });
+
+            //t.unshift(combineReducers(this.props.store.initialReducers));
+            //TODO: Convert these to pathMapReducers, each one with keys. Reduce-Reducer does not take combineReducers
+           //t.unshift(this.props.store.initialReducers);
             return composeReducers(t);
         }
 
         disconnectRedux() {
-            unset(this.context.stroe.asyncReducers, this.getStateSelector());
-            this.context.store.replaceReducer(combineReducers({
-                ...this.context.store.initialReducers,
-                ...this.context.store.asyncReducers,
+            unset(this.props.stroe.asyncReducers, this.getStateSelector());
+            this.props.store.replaceReducer(combineReducers({
+                ...this.props.store.initialReducers,
+                ...this.props.store.asyncReducers,
             }));
         }
 
         combineDynamicReducers(path, reducer) {
-            this.context.store.asyncReducers = {
-                ...this.context.store.asyncReducers,
+            this.props.store.asyncReducers = {
+                ...this.props.store.asyncReducers,
                 [path]: reusableReducer(reducer, path),
             };
             return this.getComposedReducers();
@@ -179,13 +175,13 @@ const StatefulComponentDecorator = (BaseComponent,
          * @param {string} fullSelector
          */
         postConnect(fullSelector) {
-            this.context.store.dispatch({
+            this.props.store.dispatch({
                 stateSelector: fullSelector,
                 type: INIT_STATEFUL_COMPONENT,
             });
             const propsWithDefaultState = this.getInitProps().map(prop => prop.key.stateKey);
             if (propsWithDefaultState.length) {
-                this.context.store.dispatch({
+                this.props.store.dispatch({
                     stateSelector: fullSelector,
                     type: INIT_STATEFUL_COMPONENT_STATE_FROM_PROPS,
                     defaultState: pick(this.props, propsWithDefaultState),
@@ -196,7 +192,7 @@ const StatefulComponentDecorator = (BaseComponent,
         connectRedux() {
             const fullSelector = this.getStateSelector(stateSelector);
             const combinedReducers = this.combineDynamicReducers(this.getStateSelector(), Reducer);
-            this.context.store.replaceReducer(combinedReducers);
+            this.props.store.replaceReducer(combinedReducers);
             this.Component = connect(mapStateToProps(fullSelector, this.getConnectedProps()),
                 (dispatch) => bindActionCreators(Actions, wrapDispatch(dispatch, fullSelector))
             )(BaseComponent);
@@ -205,7 +201,15 @@ const StatefulComponentDecorator = (BaseComponent,
 
         render() {
             const Component = this.Component;
-            return <Component {...this.props} />;
+            return (
+              <RouteContext.Provider value={this.props.routes}>
+                <StoreContext.Provider value={this.props.store}>
+                  <ParentStateSelectorContext.Provider value={this.getStateSelector()}>
+                    <Component {...omit(this.props, ["router", "store", "parentStateSelector"])} />
+                  </ParentStateSelectorContext.Provider>
+                </StoreContext.Provider>
+              </RouteContext.Provider>
+            );
         }
     }
 

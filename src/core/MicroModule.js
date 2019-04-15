@@ -1,0 +1,61 @@
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { Router, withRouter } from 'react-router-dom';
+import WrapCreateStore from './redux/WrapCreateStore';
+import history  from './router/History';
+import { getRoutes } from './router/RouteUtils';
+import App from './app/App.jsx';
+import EmptyHeader from './app/EmptyHeader.jsx';
+import RouteContext from "./Context/RouteContext";
+import StoreContext from "./Context/StoreContext";
+import ParentStateSelectorContext from "./Context/ParentStateSelectorContext";
+
+export default class MicroModule {
+  constructor(module, routes, reducers, headerComponent = null, containerId = 'app', userSpecifiedMiddleWares) {
+    this.module = module;
+    this.routes = routes;
+    this.reducers = {
+      ...reducers
+    };
+    //this.stateInitializer = stateInitializer;
+    if (headerComponent == null) {
+      headerComponent = EmptyHeader;
+    }
+    this.headerComponent = headerComponent;
+    this.containerId = document.getElementById(containerId);
+    this.userSpecifiedMiddleWares = userSpecifiedMiddleWares || [];
+    this._initialize();
+  }
+
+  _initialize() {
+    let INITIAL_STATE = {};
+    this.store = WrapCreateStore(this.module, this.reducers, INITIAL_STATE, this.userSpecifiedMiddleWares);
+    this.history = history;
+    this._render();
+  }
+
+  _getRoutes(routes) {
+    return getRoutes(routes || this.routes);
+  }
+
+  _render() {
+    const AppWithRouter = withRouter(App);
+    ReactDOM.render((
+      <Provider store={this.store}>
+        <Router history={this.history}>
+          <RouteContext.Provider value={this.routes}>
+            <StoreContext.Provider value={this.store}>
+              <ParentStateSelectorContext.Provider value={""}>
+                <AppWithRouter headerComponent={this.headerComponent}>
+                  {this._getRoutes()}
+                </AppWithRouter>
+              </ParentStateSelectorContext.Provider>
+            </StoreContext.Provider>
+          </RouteContext.Provider>
+        </Router>
+      </Provider>
+    ), this.containerId);
+  }
+}

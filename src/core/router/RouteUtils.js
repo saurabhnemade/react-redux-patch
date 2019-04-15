@@ -1,6 +1,11 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { map, assign, union, omit, flattenDeep } from 'lodash';
+//import { map, assign, union, omit, flattenDeep } from 'lodash';
+import map from 'lodash/map';
+import assign from 'lodash/assign';
+import union from 'lodash/union';
+import omit from 'lodash/omit';
+import flattenDeep from 'lodash/flattenDeep';
 
 export function flattenMyTree(tree) {
     function recurse(nodes, path) {

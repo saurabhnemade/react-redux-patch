@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import styles from './styles.css'
 
+/*
 export default class ExampleComponent extends Component {
   static propTypes = {
     text: PropTypes.string
@@ -20,3 +21,23 @@ export default class ExampleComponent extends Component {
     )
   }
 }
+
+*/
+import MicroModule from './core/MicroModule.js';
+import StatefulComponent from './core/redux/StatefulComponent.js';
+import { Prop,
+  PropInit,
+  PropMap,
+  PropMapGlobal,
+  PropMapInit,
+} from './core/redux/PropUtils/index.js';
+
+export {
+  MicroModule,
+  StatefulComponent,
+  Prop,
+  PropInit,
+  PropMap,
+  PropMapGlobal,
+  PropMapInit,
+};

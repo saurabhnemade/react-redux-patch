@@ -1,4 +1,7 @@
 {
+  "plugins": [ "transform-decorators-legacy", ["transform-class-properties", {
+    "spec": true
+  }]],
   "presets": [
     ["env", {
       "modules": false
