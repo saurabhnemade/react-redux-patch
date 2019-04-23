@@ -1,80 +1,20 @@
 import React, { PureComponent } from 'react';
 import { bindActionCreators, combineReducers } from 'redux';
 import { connect } from 'react-redux';
-import memoize from 'lodash/memoize';
-import get from 'lodash/get';
-import assign from 'lodash/assign';
 import unset from 'lodash/unset';
 import keys from 'lodash/keys';
 import omit from 'lodash/omit';
-import forEach from 'lodash/forEach';
+import pick from 'lodash/pick';
 import { pathMapReducer, composeReducers } from './ReducerUtils';
 import StoreContext from "../Context/StoreContext";
 import withAllContext from "../Context/withAllContext";
 import RouteContext from "../Context/RouteContext";
 import ParentStateSelectorContext from "../Context/ParentStateSelectorContext";
 
-const INIT_STATEFUL_COMPONENT = '@@INIT_STATEFUL_COMPONENT';
-const INIT_STATEFUL_COMPONENT_STATE_FROM_PROPS = '@@INIT_STATEFUL_COMPONENT_STATE_FROM_PROPS';
-
-
-const getMeorizedStatePath = memoize(stateSelector => {
-    if (stateSelector.indexOf('|') === -1) {
-        return stateSelector;
-    }
-    const path = stateSelector.split('|');
-    return path[0].split('.').concat(path[1]);
-});
-
-const mapStateToProps = (stateSelector, props) => (state, ownProps) => {
-    const subState = get(state, getMeorizedStatePath(stateSelector));
-    const mappedProps = {};
-
-    forEach(props, (descriptor) => {
-        if (descriptor.key.initStateFromGlobalPath) {
-            mappedProps[descriptor.name] = get(state, descriptor.key.stateKey);
-        } else {
-            mappedProps[descriptor.name] = get(subState, descriptor.key.stateKey);
-        }
-    });
-    return assign({}, ownProps, mappedProps);
-};
-
-const wrapDispatch = (dispatch, stateSelector) => {
-    const wrappedDispatch = (action) => {
-        let wrappedAction;
-        wrappedAction = (_dispatch, getState) => action(wrappedDispatch, getState);
-        if (typeof action === 'function') {
-            wrappedAction = (_dispatch, getState) => action(wrappedDispatch, getState);
-        } else if (typeof action === 'object') {
-            /* Not yet confortable with messing up with other stateselectors
-            * Need to take decision whether to implement it
-            * as it would make strict reducers which may be a good thing?
-            if (typeof action.stateSelectorOverride !== 'undefined') {
-                wrappedAction = { ...action, stateSelector: action.stateSelectorOverride };
-            } */
-            wrappedAction = Object.assign({}, { ...action, stateSelector });
-        }
-        return dispatch(wrappedAction);
-    };
-
-    return wrappedDispatch;
-};
-
-/**
- * Write once, use multiple times!!!
- */
-const reusableReducer = (reducer, stateSelector) => (state, action) => {
-    if (action.stateSelector === stateSelector) {
-        if (action.type === INIT_STATEFUL_COMPONENT) {
-            return reducer(state, action);
-        } else if (action.type === INIT_STATEFUL_COMPONENT_STATE_FROM_PROPS) {
-            return reducer({ ...state, ...action.defaultState }, action);
-        }
-        return reducer(state, action);
-    }
-    return reducer(state, action);
-};
+import { INIT_STATEFUL_COMPONENT, INIT_STATEFUL_COMPONENT_STATE_FROM_PROPS } from "./action-constant";
+import { mapStateToProps } from "./MapStateToPropBuilder";
+import { mapDispatchToProps } from "./MapDispatchToPropsBuilder";
+import { reusableReducer } from "./ReusableReducer";
 
 const StatefulComponentDecorator = (BaseComponent,
                                     Actions,
@@ -194,7 +134,7 @@ const StatefulComponentDecorator = (BaseComponent,
             const combinedReducers = this.combineDynamicReducers(this.getStateSelector(), Reducer);
             this.props.store.replaceReducer(combinedReducers);
             this.Component = connect(mapStateToProps(fullSelector, this.getConnectedProps()),
-                (dispatch) => bindActionCreators(Actions, wrapDispatch(dispatch, fullSelector))
+                (dispatch) => bindActionCreators(Actions, mapDispatchToProps(dispatch))
             )(BaseComponent);
             this.postConnect(fullSelector);
         }
@@ -217,6 +157,13 @@ const StatefulComponentDecorator = (BaseComponent,
 };
 
 /* eslint-disable new-cap */
+/**
+ * A wrapper function to support ES6 decorations
+ * Please see: https://github.com/tc39/proposal-decorators for more information
+ * @param args
+ * @returns {*}
+ * @constructor
+ */
 const StatefulComponent = (...args) => {
     if (typeof args[0] === 'function') {
         return StatefulComponentDecorator(...args);

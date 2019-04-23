@@ -31,6 +31,7 @@ import { Prop,
   PropMapGlobal,
   PropMapInit,
 } from './core/redux/PropUtils/index.js';
+import WithSaga from './core/redux/saga/WithSaga';
 
 export {
   MicroModule,
@@ -40,4 +41,5 @@ export {
   PropMap,
   PropMapGlobal,
   PropMapInit,
+  WithSaga
 };

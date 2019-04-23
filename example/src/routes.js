@@ -1,5 +1,6 @@
 import App from './App';
-import SamplePage from "./pages/SamplePage";
+import SamplePage from "./pages/samplePage/SamplePage";
+import NewPage from "./pages/samplePage/new/NewPage";
 
 const routes = [{
   path: '/',
@@ -9,6 +10,14 @@ const routes = [{
     path: '/sample',
     key: 'sample',
     component: SamplePage
+  }, {
+    path: '/sample/new',
+    key: 'sample/new',
+    component: NewPage
+  }, {
+    path: "/example",
+    key: "example",
+    component: NewPage
   }]
 }];
 

@@ -1,4 +1,4 @@
-const INITIAL_STATE = { name: 'name' };
+const INITIAL_STATE = { name: 'new page state' };
 
 const Reducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {

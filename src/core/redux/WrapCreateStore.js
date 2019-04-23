@@ -1,11 +1,12 @@
 import { compose, createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
+import sagaMiddleware from './saga/SagaMiddleware';
 
 export default function WrapCreateStore(moduleName,
                                         reducers,
                                         initialState,
                                         userSpecifiedMiddleWares) {
-    const appName = `MODULE_${moduleName}`;
+    const appName = `${moduleName}`;
     /* eslint-disable no-underscore-dangle */
     const composeEnhancers = typeof window === 'object'
     && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -20,7 +21,7 @@ export default function WrapCreateStore(moduleName,
     /* eslint-enable no-underscore-dangle */
 
     /* eslint-disable global-require */
-    let middleware = [thunk];
+    let middleware = [thunk, sagaMiddleware];
     /* eslint-enable global-require */
     middleware = middleware.concat(userSpecifiedMiddleWares);
     const enhancer = composeEnhancers(

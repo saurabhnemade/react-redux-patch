@@ -1,4 +1,4 @@
-const parameterlessDecorator = (propType, key, descriptor, mapping) => {
+const parameterLessDecorator = (propType, key, descriptor, mapping) => {
     const newDescriptor = Object.assign({}, descriptor);
     newDescriptor.initializer = (...args) => {
         let value = descriptor.initializer(...args);
@@ -13,11 +13,11 @@ const parameterlessDecorator = (propType, key, descriptor, mapping) => {
 };
 
 const decorator = (mapping) => (propType, key, descriptor) =>
-    parameterlessDecorator(propType, key, descriptor, mapping);
+  parameterLessDecorator(propType, key, descriptor, mapping);
 
 
 const PropMapGlobal = (...args) => typeof args[0] === 'object'
-    ? parameterlessDecorator(...args) : decorator(args[0]);
+    ? parameterLessDecorator(...args) : decorator(args[0]);
 
 /* eslint-enable no-confusing-arrow */
 
