@@ -83,7 +83,7 @@ export default {
 @routes/index.js
 
 ```jsx
-import DashboardPage from '@pages/dashboard/index.js
+import DashboardPage from '@pages/dashboard/index.js'
 
 const routes = [{
     path: '/',
