@@ -95,6 +95,8 @@ const routes = [{
       component: DashboardPage
     }]
 }]
+
+export default routes;
 ```
 
 
