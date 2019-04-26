@@ -4,7 +4,7 @@ node_js:
 
 after_success:
   - yarn global add rollup
-  - yarn install
+  - yarn
 
 deploy:
   - provider: npm
