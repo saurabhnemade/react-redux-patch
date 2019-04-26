@@ -1,4 +1,22 @@
 language: node_js
 node_js:
-  - 9
   - 8
+
+after_success:
+  - yarn global add rollup
+  - yarn install
+
+deploy:
+  - provider: npm
+    email: $NPM_EMAIL
+    api_key: $NPM_TOKEN
+    skip_cleanup: true
+    on:
+      branch: master
+
+notifications:
+  email:
+    recipients:
+      - saurabhnemade@yandex.com
+    on_success: always
+    on_failure: always
