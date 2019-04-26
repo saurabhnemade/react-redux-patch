@@ -174,7 +174,7 @@ class DashboardPage extends Component {
     return (
       <>
         <div>Sample Dashboard Page</div>
-        <pre>{JSON.stringify(this.props)</pre>
+        <pre>{JSON.stringify(this.props)}</pre>
       </>
     );
   }
