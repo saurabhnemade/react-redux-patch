@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 /**
  * A default Header for application
  * */
-export default class EmptyHeader extends PureComponent {
+export default class EmptyContainer extends PureComponent {
     static propTypes = {
       children: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.node),

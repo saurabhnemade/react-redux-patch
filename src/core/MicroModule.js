@@ -7,7 +7,7 @@ import WrapCreateStore from './redux/WrapCreateStore';
 import history  from './router/History';
 import { getRoutes } from './router/RouteUtils';
 import App from './app/App.jsx';
-import EmptyHeader from './app/EmptyHeader.jsx';
+import EmptyContainer from './app/EmptyContainer.jsx';
 import StoreContext from "./Context/StoreContext";
 import ParentStateSelectorContext from "./Context/ParentStateSelectorContext";
 
@@ -19,7 +19,7 @@ export default class MicroModule {
       ...reducers
     };
     if (appContainer == null) {
-      appContainer = EmptyHeader;
+      appContainer = EmptyContainer;
     }
     this.appContainer = appContainer;
     this.containerId = document.getElementById(containerId);
