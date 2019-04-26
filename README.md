@@ -4,8 +4,8 @@
 
 [![NPM](https://img.shields.io/npm/v/react-redux-patch.svg)](https://www.npmjs.com/package/react-redux-patch) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-## What is react-redux-patch
-React-redux-patch is just another library which tries to simplify the web application development for react applications.
+## What is react-redux-patch?
+react-redux-patch is just another library which tries to simplify the web application development for react applications.
 From various ideas I came across past few years and a few implementations which I think are founding ground for this project, I decided to write this library to abstract the general setup of react-redux application. 
 It specifically focuses and solves the problem of registering dynamic reducers. It also provides shorthand syntax for connect, mapStateToProps and mapDispatchToProps
 
