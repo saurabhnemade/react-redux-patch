@@ -2,31 +2,33 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Reducer from './app-reducer';
 import Actions from './app-actions';
+import { flattenMyTree } from './../router/RouteUtils';
 import StatefulComponent from '../redux/StatefulComponent.js';
 
 @StatefulComponent(Actions, Reducer, 'application')
 export default class App extends Component {
     static propTypes = {
         children: PropTypes.node.isRequired,
-        routes: PropTypes.object,
+        routes: PropTypes.array,
         history: PropTypes.object,
-        headerComponent: PropTypes.any,
+        appContainer: PropTypes.any,
+        name: PropTypes.string,
 
         /** App Actions */
         appInitialized: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
-        this.props.appInitialized();
+        this.props.appInitialized(this.props.name);
     }
 
     render() {
-        const HeaderComponent = this.props.headerComponent;
+        const AppComponent = this.props.appContainer;
         return (
               <div style={{ height: '100%' }}>
-                {this.props.name}
-                  <HeaderComponent {...this.props} />
+                <AppComponent {...this.props} cleanRoutes={flattenMyTree(this.props.routes)}>
                   {this.props.children}
+                </AppComponent>
               </div>
         );
     }

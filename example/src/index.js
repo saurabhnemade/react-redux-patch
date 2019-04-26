@@ -1,5 +1,5 @@
 import './index.css'
-import { MicroModule } from 'react-redux-saga-micro-frontend-module';
+import { MicroModule } from 'redux-endgame';
 import routes from './routes';
 import reducers from './reducers/index';
 

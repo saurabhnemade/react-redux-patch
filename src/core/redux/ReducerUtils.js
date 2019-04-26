@@ -1,6 +1,19 @@
 import get from 'lodash/get';
 import set from 'lodash/set';
 
+
+/**
+ * Default reducer in case user does not pass reducer
+ * @param state
+ * @returns {{[p: string]: *}}
+ */
+const defaultReducer = (state) => {
+  return {
+    ...state,
+    "__name__": "defaultReducer",
+  };
+};
+
 /**
  * To create dynamic action creator
  */
@@ -69,11 +82,11 @@ const composeReducers = (...reducers) => (state, action) => {
         } else {
             reducer.forEach((pathMapReducer) => {
                 nextState = pathMapReducer(nextState, action);
-        });
+            });
         }
     });
     return nextState;
 };
 /* eslint-disable no-param-reassign, new-cap, no-shadow */
 
-export { isValidReducer, composeReducers, pathMapReducer };
+export { isValidReducer, composeReducers, pathMapReducer, defaultReducer };

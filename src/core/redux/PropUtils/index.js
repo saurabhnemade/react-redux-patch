@@ -9,5 +9,5 @@ export {
     PropInit,
     PropMap,
     PropMapGlobal,
-    PropMapInit,
+    PropMapInit
 };

@@ -1,10 +1,10 @@
 {
-  "name": "react-redux-saga-micro-frontend-module",
+  "name": "react-redux-patch",
   "version": "1.0.0",
   "description": "",
   "author": "saurabhnemade",
   "license": "MIT",
-  "repository": "saurabhnemade/react-redux-saga-micro-frontend-module",
+  "repository": "saurabhnemade/react-redux-patch",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
@@ -23,8 +23,8 @@
   },
   "peerDependencies": {
     "prop-types": "^15.5.4",
-    "react": "^15.0.0 || ^16.0.0",
-    "react-dom": "^15.0.0 || ^16.0.0"
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0"
   },
   "devDependencies": {
     "@svgr/rollup": "^2.4.1",

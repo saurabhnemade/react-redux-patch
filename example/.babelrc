@@ -1,0 +1,17 @@
+{
+  "presets": [
+    ["env",
+      {
+        "loose": true,
+        "modules": false,
+        "targets": {
+          "node": "8"
+        },
+        "debug": true,
+        "spec": true
+      }
+    ],
+    "stage-2",
+    "react-app"],
+  "plugins": ["transform-decorators-legacy", "transform-class-properties"]
+}

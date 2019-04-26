@@ -8,22 +8,20 @@ import history  from './router/History';
 import { getRoutes } from './router/RouteUtils';
 import App from './app/App.jsx';
 import EmptyHeader from './app/EmptyHeader.jsx';
-import RouteContext from "./Context/RouteContext";
 import StoreContext from "./Context/StoreContext";
 import ParentStateSelectorContext from "./Context/ParentStateSelectorContext";
 
 export default class MicroModule {
-  constructor(module, routes, reducers, headerComponent = null, containerId = 'app', userSpecifiedMiddleWares) {
+  constructor(module, routes, reducers, appContainer = null, containerId = 'app', userSpecifiedMiddleWares) {
     this.module = module;
     this.routes = routes;
     this.reducers = {
       ...reducers
     };
-    //this.stateInitializer = stateInitializer;
-    if (headerComponent == null) {
-      headerComponent = EmptyHeader;
+    if (appContainer == null) {
+      appContainer = EmptyHeader;
     }
-    this.headerComponent = headerComponent;
+    this.appContainer = appContainer;
     this.containerId = document.getElementById(containerId);
     this.userSpecifiedMiddleWares = userSpecifiedMiddleWares || [];
     this._initialize();
@@ -45,15 +43,13 @@ export default class MicroModule {
     ReactDOM.render((
       <Provider store={this.store}>
         <Router history={this.history}>
-          <RouteContext.Provider value={this.routes}>
             <StoreContext.Provider value={this.store}>
               <ParentStateSelectorContext.Provider value={""}>
-                <AppWithRouter headerComponent={this.headerComponent}>
+                <AppWithRouter appContainer={this.appContainer} routes={this.routes} name={this.module}>
                   {this._getRoutes()}
                 </AppWithRouter>
               </ParentStateSelectorContext.Provider>
             </StoreContext.Provider>
-          </RouteContext.Provider>
         </Router>
       </Provider>
     ), this.containerId);

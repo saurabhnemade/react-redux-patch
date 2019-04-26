@@ -1,14 +1,14 @@
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { bindActionCreators, combineReducers } from 'redux';
 import { connect } from 'react-redux';
 import unset from 'lodash/unset';
 import keys from 'lodash/keys';
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
-import { pathMapReducer, composeReducers } from './ReducerUtils';
-import StoreContext from "../Context/StoreContext";
+import isEmpty from 'lodash/isEmpty';
+import isString from 'lodash/isString';
+import {pathMapReducer, composeReducers, isValidReducer, defaultReducer} from './ReducerUtils';
 import withAllContext from "../Context/withAllContext";
-import RouteContext from "../Context/RouteContext";
 import ParentStateSelectorContext from "../Context/ParentStateSelectorContext";
 
 import { INIT_STATEFUL_COMPONENT, INIT_STATEFUL_COMPONENT_STATE_FROM_PROPS } from "./action-constant";
@@ -21,6 +21,18 @@ const StatefulComponentDecorator = (BaseComponent,
                                     Reducer,
                                     stateSelector,
                                     inheritStateSelector) => {
+    //TODO: Need to check if component is valid react component
+    if(!BaseComponent) {
+      BaseComponent=(<Fragment/>);
+    }
+
+    Actions = isEmpty(Actions) ? {} : Actions;
+    Reducer = isValidReducer(Reducer) ? Reducer : defaultReducer;
+
+    if(!isString(stateSelector) || isEmpty(stateSelector)) {
+      stateSelector = '_' + Math.random().toString(36).substr(2, 9);
+    }
+
     @withAllContext
     class StatefulComponent extends PureComponent {
         static getBasePropTypes() {
@@ -33,10 +45,14 @@ const StatefulComponentDecorator = (BaseComponent,
             this.connectRedux();
         }
 
+        /** This is intentionally left untouched
+         *  Even though we can disconnect reducer,
+         *  I am uncertain at the moment whether
+         *  we have a valid use case around this.
+         */
         componentWillUnmount() {
-            // this.disconnectRedux();
+            //this.disconnectRedux();
         }
-
 
         getStateSelector() {
             if (!stateSelector) {
@@ -78,20 +94,14 @@ const StatefulComponentDecorator = (BaseComponent,
         }
 
         getComposedReducers() {
-            const t = [];
-
+            const reducers = [];
             keys(this.props.store.initialReducers).forEach((key) => {
-              t.push(pathMapReducer(key, this.props.store.initialReducers[key]));
+              reducers.push(pathMapReducer(key, this.props.store.initialReducers[key]));
             });
-
             keys(this.props.store.asyncReducers).forEach((key) => {
-                t.push(pathMapReducer(key, this.props.store.asyncReducers[key]));
+              reducers.push(pathMapReducer(key, this.props.store.asyncReducers[key]));
             });
-
-            //t.unshift(combineReducers(this.props.store.initialReducers));
-            //TODO: Convert these to pathMapReducers, each one with keys. Reduce-Reducer does not take combineReducers
-           //t.unshift(this.props.store.initialReducers);
-            return composeReducers(t);
+            return composeReducers(reducers);
         }
 
         disconnectRedux() {
@@ -142,13 +152,9 @@ const StatefulComponentDecorator = (BaseComponent,
         render() {
             const Component = this.Component;
             return (
-              <RouteContext.Provider value={this.props.routes}>
-                <StoreContext.Provider value={this.props.store}>
-                  <ParentStateSelectorContext.Provider value={this.getStateSelector()}>
-                    <Component {...omit(this.props, ["router", "store", "parentStateSelector"])} />
-                  </ParentStateSelectorContext.Provider>
-                </StoreContext.Provider>
-              </RouteContext.Provider>
+              <ParentStateSelectorContext.Provider value={this.getStateSelector()}>
+                <Component {...omit(this.props, ["store", "parentStateSelector"])} />
+              </ParentStateSelectorContext.Provider>
             );
         }
     }
@@ -170,6 +176,5 @@ const StatefulComponent = (...args) => {
     }
     return (BaseComponent) => StatefulComponentDecorator(BaseComponent, ...args);
 };
-/* eslint-enable new-cap */
 
 export default StatefulComponent;

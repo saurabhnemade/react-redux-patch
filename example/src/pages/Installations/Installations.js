@@ -4,9 +4,7 @@ import Actions from './actions';
 import { StatefulComponent, WithSaga } from "redux-endgame";
 import Sagas from './saga';
 
-import NewPage from './new/NewPage';
-
-class SamplePage extends Component {
+class Installtion extends Component {
   componentDidMount() {
     console.log('component did mount called')
     this.props.appInitialized();
@@ -17,13 +15,12 @@ class SamplePage extends Component {
     console.log(history);
     return (
       <div>
-        This is samplePage
-        <NewPage />
+        This is Installation page
       </div>
     );
   }
 }
 
-const WithSagaSimplePage = WithSaga(SamplePage, Sagas);
+const WithSagaSimplePage = WithSaga(Installtion, Sagas);
 
-export default StatefulComponent(WithSagaSimplePage, Actions, Reducer, 'SamplePage');
+export default StatefulComponent(WithSagaSimplePage, Actions, Reducer, 'installations');

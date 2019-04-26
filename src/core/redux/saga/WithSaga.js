@@ -7,15 +7,14 @@ import sagaMiddleware from './SagaMiddleware';
  * @param Sagas
  * @returns {WithSaga}
  */
-const withSagaDecorator = (BaseComponent,
-                                    Sagas) => {
-  class WithSaga extends PureComponent {
+const withSagaDecorator = (BaseComponent, Sagas) => {
+  class WithSagaComponent extends PureComponent {
     static getBasePropTypes() {
       return BaseComponent.propTypes || {};
     }
 
-    constructor(props, context) {
-      super(props, context);
+    constructor(props) {
+      super(props);
       this.registerSaga();
     }
 
@@ -30,11 +29,10 @@ const withSagaDecorator = (BaseComponent,
     }
   }
 
-  return WithSaga;
-
+  return WithSagaComponent;
 };
 
-const StatefulComponent = (...args) => {
+const WithSaga = (...args) => {
   if (typeof args[0] === 'function') {
     return withSagaDecorator(...args);
   }
@@ -42,4 +40,4 @@ const StatefulComponent = (...args) => {
 };
 /* eslint-enable new-cap */
 
-export default StatefulComponent;
+export default WithSaga;

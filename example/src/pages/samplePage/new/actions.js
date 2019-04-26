@@ -1,5 +1,5 @@
 const Actions = {
-    appInitialized: () => dispatch => {
+    _appInitialized: () => dispatch => {
     dispatch({
         type: 'NEW_PAGE_REDUCER',
     });

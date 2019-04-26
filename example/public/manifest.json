@@ -1,6 +1,6 @@
 {
-  "short_name": "react-redux-saga-micro-frontend-module",
-  "name": "react-redux-saga-micro-frontend-module",
+  "short_name": "react-redux-patch",
+  "name": "react-redux-patch",
   "start_url": "./index.html",
   "display": "standalone",
   "theme_color": "#000000",
