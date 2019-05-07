@@ -38,15 +38,16 @@ export default class MicroModule {
     return getRoutes(routes || this.routes);
   }
 
-  _render() {
+  _render(routes) {
     const AppWithRouter = withRouter(App);
+    this.routes = routes || this.routes;
     ReactDOM.render((
       <Provider store={this.store}>
         <Router history={this.history}>
             <StoreContext.Provider value={this.store}>
               <ParentStateSelectorContext.Provider value={""}>
                 <AppWithRouter appContainer={this.appContainer} routes={this.routes} name={this.module}>
-                  {this._getRoutes()}
+                  {this._getRoutes(routes)}
                 </AppWithRouter>
               </ParentStateSelectorContext.Provider>
             </StoreContext.Provider>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Reducer from './reducer';
 import Actions from './actions';
-import { StatefulComponent, WithSaga, Prop, PropMap } from "redux-endgame";
+import { StatefulComponent, WithSaga, Prop, PropMap } from "react-redux-patch";
 import Sagas from './saga';
 
 @StatefulComponent(Actions, Reducer, 'newPage', true)

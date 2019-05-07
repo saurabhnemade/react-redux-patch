@@ -139,11 +139,19 @@ const StatefulComponentDecorator = (BaseComponent,
             }
         }
 
+        getMapStateToProps() {
+          if (BaseComponent.mapStateToProps) {
+            return BaseComponent.mapStateToProps;
+          } else {
+            return mapStateToProps(this.getStateSelector(stateSelector), this.getConnectedProps());
+          }
+        }
+
         connectRedux() {
             const fullSelector = this.getStateSelector(stateSelector);
             const combinedReducers = this.combineDynamicReducers(this.getStateSelector(), Reducer);
             this.props.store.replaceReducer(combinedReducers);
-            this.Component = connect(mapStateToProps(fullSelector, this.getConnectedProps()),
+            this.Component = connect(this.getMapStateToProps(),
                 (dispatch) => bindActionCreators(Actions, mapDispatchToProps(dispatch))
             )(BaseComponent);
             this.postConnect(fullSelector);
