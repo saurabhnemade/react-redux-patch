@@ -1,26 +1,36 @@
 import React, { Component } from 'react';
+import PropTypes from "prop-types";
 import Reducer from './reducer';
 import Actions from './actions';
-import { StatefulComponent, WithSaga } from "redux-endgame";
+import { StatefulComponent, WithSaga, mapPropTypes, Prop } from "react-redux-patch";
 import Sagas from './saga';
 
 class Installtion extends Component {
+  static propTypes = {
+    name2: PropTypes.string
+  }
+
   componentDidMount() {
     console.log('component did mount called')
     this.props.appInitialized();
   }
 
   render() {
-    const { history } = this.props;
-    console.log(history);
     return (
       <div>
         This is Installation page
+        <pre>
+          {JSON.stringify(this.props, null, 2)}
+        </pre>
       </div>
     );
   }
 }
 
-const WithSagaSimplePage = WithSaga(Installtion, Sagas);
+mapPropTypes(Installtion, {
+    name2: [Prop]
+});
 
-export default StatefulComponent(WithSagaSimplePage, Actions, Reducer, 'installations');
+const connectedInstallation = StatefulComponent(Installtion, Actions, Reducer, 'installations');
+
+export default WithSaga(connectedInstallation, Sagas);

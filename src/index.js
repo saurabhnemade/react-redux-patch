@@ -32,6 +32,7 @@ import { Prop,
   PropMapInit,
 } from './core/redux/PropUtils/index.js';
 import WithSaga from './core/redux/saga/WithSaga';
+import { mapPropTypes, mapStateProps } from './core/redux/DecorateHelper';
 
 export {
   MicroModule,
@@ -41,5 +42,7 @@ export {
   PropMap,
   PropMapGlobal,
   PropMapInit,
-  WithSaga
+  WithSaga,
+  mapPropTypes,
+  mapStateProps
 };

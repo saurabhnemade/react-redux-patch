@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Reducer from './reducer';
 import Actions from './actions';
-import { StatefulComponent, WithSaga } from "redux-endgame";
+import { StatefulComponent, WithSaga } from "react-redux-patch";
 import Sagas from './saga';
 
 import NewPage from './new/NewPage';
