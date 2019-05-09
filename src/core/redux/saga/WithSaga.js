@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react';
 import sagaMiddleware from './SagaMiddleware';
+import isArray from "lodash/isArray";
 
 /**
  * HOC for registering saga dynamically
@@ -7,7 +8,7 @@ import sagaMiddleware from './SagaMiddleware';
  * @param Sagas
  * @returns {WithSaga}
  */
-const withSagaDecorator = (BaseComponent, Sagas) => {
+const withSagaDecorator = (BaseComponent, Sagas = []) => {
   class WithSagaComponent extends PureComponent {
     static getBasePropTypes() {
       return BaseComponent.propTypes || {};
@@ -19,7 +20,13 @@ const withSagaDecorator = (BaseComponent, Sagas) => {
     }
 
     registerSaga() {
-        sagaMiddleware.run(Sagas);
+        if(isArray(Sagas)) {
+          Sagas.forEach(saga => {
+            sagaMiddleware.run(saga);
+          });
+        } else {
+          sagaMiddleware.run(Sagas);
+        }
     }
 
     render() {
