@@ -7,6 +7,7 @@ import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 import isEmpty from 'lodash/isEmpty';
 import isString from 'lodash/isString';
+import intersection from 'lodash/intersection';
 import {pathMapReducer, composeReducers, isValidReducer, defaultReducer} from './ReducerUtils';
 import withAllContext from "../Context/withAllContext";
 import ParentStateSelectorContext from "../Context/ParentStateSelectorContext";
@@ -95,7 +96,17 @@ const StatefulComponentDecorator = (BaseComponent,
 
         getComposedReducers() {
             const reducers = [];
-            keys(this.props.store.initialReducers).forEach((key) => {
+            const initialReducerKeys = keys(this.props.store.initialReducers);
+            const asyncReducerKeys = keys(this.props.store.asyncReducers);
+            const intersectionKeys = intersection(initialReducerKeys, asyncReducerKeys);
+            const filteredInitialReducerKeys = initialReducerKeys.filter((itemKey) => {
+              if (intersectionKeys.indexOf(itemKey)!==-1) {
+                return false;
+              }
+              return true;
+            });
+
+            filteredInitialReducerKeys.forEach((key) => {
               reducers.push(pathMapReducer(key, this.props.store.initialReducers[key]));
             });
             keys(this.props.store.asyncReducers).forEach((key) => {
